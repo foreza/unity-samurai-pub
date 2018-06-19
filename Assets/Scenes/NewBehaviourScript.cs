@@ -1,21 +1,40 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Advertisements;
 
+
 [RequireComponent(typeof(Button))]
+[SuppressMessage("ReSharper", "AccessToStaticMemberViaDerivedType")]
+
 public class NewBehaviourScript : MonoBehaviour
 {
     Button m_Button;
     public string gameId = "2624011";
     public string placementId = "rewardedVideo";
 
+    // Mopub
+    private readonly string[] _bannerAdUnits =
+    { "0ac59b0996d947309c33f59d6676399f" };
+
+    private readonly string[] _interstitialAdUnits =
+        { "4f117153f5c24fa6a3a92b818a5eb630" };
+
+    private readonly string[] _rewardedVideoAdUnits =
+        { "8f000bd5e00246de9c789eed39ff6096" };
+
+    private readonly string[] _rewardedRichMediaAdUnits = { };
+
     void Start()
     {
+
         m_Button = GetComponent<Button>();
-        if (m_Button) {
+        if (m_Button)
+        {
             Debug.Log("m_Button - AddListener ShowAd");
             m_Button.onClick.AddListener(ShowAd);
-            m_Button.enabled = true;
         }
 
         if (Advertisement.isSupported)
@@ -25,6 +44,20 @@ public class NewBehaviourScript : MonoBehaviour
         }
 
         Debug.Log("Successful start");
+
+        var anyAdUnitId = _bannerAdUnits[0];
+
+        MoPub.InitializeSdk(anyAdUnitId);
+
+        MoPub.LoadBannerPluginsForAdUnits(_bannerAdUnits);
+        MoPub.LoadInterstitialPluginsForAdUnits(_interstitialAdUnits);
+        MoPub.LoadRewardedVideoPluginsForAdUnits(_rewardedVideoAdUnits);
+        MoPub.LoadRewardedVideoPluginsForAdUnits(_rewardedRichMediaAdUnits);
+
+        CreateInterstitialsSection();
+
+
+
 
 
     }
@@ -68,4 +101,13 @@ public class NewBehaviourScript : MonoBehaviour
             Debug.LogError("Video failed to show");
         }
     }
+
+    // MoPub Create interstitial
+    private void CreateInterstitialsSection()
+    {
+        MoPub.RequestInterstitialAd(_interstitialAdUnits[0]);
+        MoPub.ShowInterstitialAd(_interstitialAdUnits[0]);
+          
+    }
+
 }
